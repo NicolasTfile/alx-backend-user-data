@@ -54,18 +54,21 @@ def get_logger() -> logging.Logger:
 
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
-    """ Implement db conectivity
-    """
-    pass_word = os.environ.get("PERSONAL_DATA_DB_PASSWORD", "")
-    username = os.environ.get('PERSONAL_DATA_DB_USERNAME', "root")
-    host = os.environ.get('PERSONAL_DATA_DB_HOST', 'localhost')
-    db_name = os.environ.get('PERSONAL_DATA_DB_NAME')
-    connect_to_holberton = mysql.connector.connect(
-        host=host,
-        database=db_name,
-        user=username,
-        password=pass_word)
-    return connect_to_holberton
+    """ Get a connector to the database. """
+
+    db_username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
+    db_password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
+    db_host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
+    db_name = os.getenv("PERSONAL_DATA_DB_NAME")
+
+    connector = mysql.connector.connect(
+        user=db_username,
+        password=db_password,
+        host=db_host,
+        database=db_name
+    )
+
+    return connector
 
 
 def main() -> None:
@@ -74,11 +77,16 @@ def main() -> None:
     db = get_db()
     cursor = db.cursor()
     cursor.execute("SELECT * FROM users;")
-    for row in cursor:
-        message = f"name={row[0]}; email={row[1]}; phone={row[2]}; " +\
-            f"ssn={row[3]}; password={row[4]};ip={row[5]}; " +\
-            f"last_login={row[6]}; user_agent={row[7]};"
-        print(message)
+    data = cursor.fetchall()
+
+    log = get_logger()
+
+    for row in data:
+        fields = 'name={}; email={}; phone={}; ssn={}; password={}; ip={}; '\
+            'last_login={}; user_agent={};'
+        fields = fields.format(row[0], row[1], row[2], row[3],
+                               row[4], row[5], row[6], row[7])
+        log.info(fields)
     cursor.close()
     db.close()
 
