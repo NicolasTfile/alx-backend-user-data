@@ -6,7 +6,6 @@ implementation of Auth class
 from flask import request
 from typing import TypeVar, List
 from fnmatch import fnmatch
-User = TypeVar('User')
 
 
 class Auth:
@@ -35,7 +34,7 @@ class Auth:
             return None
         return auth_header
 
-    def current_user(self, request=None) -> User:
+    def current_user(self, request=None) -> TypeVar('User'):
         """
         returns None - request will be the Flask request object
         """
