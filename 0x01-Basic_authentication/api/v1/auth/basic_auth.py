@@ -23,7 +23,7 @@ class BasicAuth(Auth):
         """
         if (authorization_header is None or
             not isinstance(authorization_header, str) or
-            not authorization_header.startswith("Basic ")):
+                not authorization_header.startswith("Basic ")):
             return None
 
         return authorization_header[6:]
@@ -62,9 +62,9 @@ class BasicAuth(Auth):
         """
         returns the User instance based on his email and password
         """
-        if user_email is None or type(user_email) != str:
+        if user_email is None or not isinstance(user_email, str):
             return None
-        if user_pwd is None or type(user_pwd) != str:
+        if user_pwd is None or not isinstance(user_pwd, str):
             return None
 
         try:
